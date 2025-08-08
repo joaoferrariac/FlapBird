@@ -215,17 +215,28 @@ export function createRenderer(canvas) {
 
   function drawPipes(pipes, pipe, H, groundH, s) {
     for (const p of pipes) {
-      const g = ctx.createLinearGradient(p.x, 0, p.x + pipe.w, 0);
-      g.addColorStop(0, '#27ae60'); g.addColorStop(0.5, '#2ecc71'); g.addColorStop(1, '#1f8f50');
-      ctx.fillStyle = g; ctx.strokeStyle = '#187a44'; ctx.lineWidth = 2 * s;
-      const by = H - groundH - p.bottom; const capH = 10 * s;
-      ctx.fillRect(p.x, 0, pipe.w, p.top); ctx.fillRect(p.x, by, pipe.w, p.bottom);
-      ctx.strokeRect(p.x + 0.5, 0.5, pipe.w - 1, p.top - 1); ctx.strokeRect(p.x + 0.5, by + 0.5, pipe.w - 1, p.bottom - 1);
-      ctx.fillStyle = '#239b56'; ctx.fillRect(p.x - 4 * s, p.top - capH, pipe.w + 8 * s, capH); ctx.fillRect(p.x - 4 * s, by, pipe.w + 8 * s, capH);
-      const dx = 6 * s, dy = 3 * s; ctx.fillStyle = '#1e7746';
-      ctx.beginPath(); ctx.moveTo(p.x + pipe.w, 0); ctx.lineTo(p.x + pipe.w + dx, dy); ctx.lineTo(p.x + pipe.w + dx, p.top + dy); ctx.lineTo(p.x + pipe.w, p.top); ctx.closePath(); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(p.x + pipe.w, by); ctx.lineTo(p.x + pipe.w + dx, by + dy); ctx.lineTo(p.x + pipe.w + dx, by + p.bottom + dy); ctx.lineTo(p.x + pipe.w, by + p.bottom); ctx.closePath(); ctx.fill();
-      const hl = ctx.createLinearGradient(p.x, 0, p.x + 8 * s, 0); hl.addColorStop(0, 'rgba(255,255,255,0.18)'); hl.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = hl; ctx.fillRect(p.x, 0, 8 * s, p.top); ctx.fillRect(p.x, by, 8 * s, p.bottom);
+      // Tronco da árvore
+      ctx.fillStyle = '#8B5A2B'; // marrom
+      const by = H - groundH - p.bottom;
+      ctx.fillRect(p.x, 0, pipe.w, p.top); // tronco superior
+      ctx.fillRect(p.x, by, pipe.w, p.bottom); // tronco inferior
+
+      // Copa da árvore (topo)
+      ctx.fillStyle = '#2ecc40';
+      ctx.beginPath();
+      ctx.ellipse(p.x + pipe.w / 2, p.top, pipe.w * 1.2, 18 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Copa da árvore (base)
+      ctx.beginPath();
+      ctx.ellipse(p.x + pipe.w / 2, by + p.bottom, pipe.w * 1.2, 18 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Contorno do tronco
+      ctx.strokeStyle = '#5C4033';
+      ctx.lineWidth = 2 * s;
+      ctx.strokeRect(p.x + 0.5, 0.5, pipe.w - 1, p.top - 1);
+      ctx.strokeRect(p.x + 0.5, by + 0.5, pipe.w - 1, p.bottom - 1);
     }
   }
 
