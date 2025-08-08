@@ -1,4 +1,3 @@
-import { clamp } from './math.js';
 import { State } from './state.js';
 
 export function createGame(renderer) {
