@@ -78,6 +78,13 @@ export function createGame(renderer) {
     ({ W, H, s, dpr, groundH } = renderer.size);
     ctx.clearRect(0, 0, W, H);
 
+    // Aumenta a velocidade dos canos conforme o tempo de jogo
+    if (state === State.Playing) {
+      // A cada segundo, aumenta um pouco a velocidade (máx. 2x inicial)
+      const tempoSegundos = ts / 1000;
+      pipe.speed = pipeBase.speed * Math.min(2, 1 + tempoSegundos * 0.015);
+    }
+
     // shake
     const t = dt / 16.67; if (renderer.shake > 0) renderer.shake = Math.max(0, renderer.shake - 0.6 * s * t);
     const offsetX = (Math.random() - 0.5) * renderer.shake; const offsetY = (Math.random() - 0.5) * renderer.shake; ctx.save(); ctx.translate(offsetX, offsetY);
