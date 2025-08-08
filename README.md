@@ -1,6 +1,6 @@
-# FlapBird (HTML5 Canvas)
+# Voa Passarinho (HTML5 Canvas)
 
-A modern, modular Flappy‑Bird‑style game built with plain HTML, CSS and ES Modules. Fully responsive, fullscreen, and packed with subtle visual effects and improved physics.
+Voa Passarinho is a modern, modular Flappy‑Bird‑style game built with plain HTML, CSS and ES Modules. Fully responsive, fullscreen, and packed with subtle visual effects and improved physics.
 
 ## Features
 - Fullscreen, HiDPI rendering with devicePixelRatio scaling
