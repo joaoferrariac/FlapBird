@@ -4,8 +4,8 @@ Um jogo moderno estilo Flappy Bird criado com HTML5, CSS e JavaScript puro. Tota
 
 ## 📸 Capturas de Tela
 
-<!-- Adicione suas capturas de tela aqui -->
-*Em breve: imagens do jogo em ação*
+![Voa Passarinho - Tela Inicial](screenshots/game-screenshot.png)
+*Tela inicial do jogo mostrando o pássaro, montanhas em paralaxe, nuvens e interface responsiva*
 
 ## ✨ Características
 
