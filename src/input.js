@@ -7,7 +7,7 @@ export function bindInput({ canvas, flap, reset, toggleFullscreen }) {
     if (e.code === 'KeyF') toggleFullscreen();
   }, { passive: false });
   canvas.addEventListener('pointerdown', flap);
-  canvas.addEventListener('dblclick', (e) => { e.preventDefault(); toggleFullscreen(); }, { passive: false });
+  canvas.addEventListener('dblclick', (e) => { e.preventDefault(); /* não faz nada */ }, { passive: false });
 }
 
 export function toggleFullscreenFor(canvas) {

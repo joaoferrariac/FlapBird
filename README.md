@@ -1,5 +1,9 @@
 # 🐦 Voa Passarinho
 
+## 🚀 Jogue Online
+
+[Acesse o jogo aqui!](https://voa-passarinho.netlify.app/)
+
 Um jogo moderno estilo Flappy Bird criado com HTML5, CSS e JavaScript puro. Totalmente responsivo, tela cheia e repleto de efeitos visuais especiais!
 
 ## 📸 Capturas de Tela
