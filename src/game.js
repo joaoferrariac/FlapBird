@@ -18,8 +18,35 @@ export function createGame(renderer) {
 
   function recalc() {
     ({ W, H, s, dpr, groundH } = renderer.size);
-    bird.x = Math.min(140 * s, W * 0.28); bird.r = 12 * s; bird.gravity = 0.5 * s; bird.jump = -8.8 * s; phys.vMaxDown = 10 * s; phys.vMaxUp = -9 * s;
-    pipe.w = Math.max(48 * s, 40 * s); pipe.gap = Math.max(120 * s, 100 * s); pipe.minTop = Math.max(56 * s, 44 * s); pipe.speed = 2.6 * Math.max(0.9, s); pipe.spawnMs = 1350;
+    
+    // Adaptive bird position based on screen width
+    bird.x = Math.min(140 * s, W * 0.25);
+    bird.r = Math.max(10 * s, 8 * s);
+    bird.gravity = 0.5 * s;
+    bird.jump = -8.8 * s;
+    
+    // Physics scaling
+    phys.vMaxDown = 10 * s;
+    phys.vMaxUp = -9 * s;
+    
+    // Pipe scaling with aspect ratio considerations
+    const aspectRatio = W / H;
+    pipe.w = Math.max(45 * s, 35 * s);
+    
+    // Adjust gap based on screen size and orientation
+    if (aspectRatio < 0.7) { // Portrait
+      pipe.gap = Math.max(130 * s, 110 * s);
+    } else if (aspectRatio > 1.5) { // Landscape
+      pipe.gap = Math.max(140 * s, 120 * s);
+    } else { // Square-ish
+      pipe.gap = Math.max(135 * s, 115 * s);
+    }
+    
+    pipe.minTop = Math.max(50 * s, 40 * s);
+    pipe.speed = 2.6 * Math.max(0.8, Math.min(1.2, s));
+    
+    // Spawn timing based on screen width
+    pipe.spawnMs = Math.max(1200, 1350 - (W - 400) * 0.5);
   }
 
   function spawnPipe() {
@@ -89,10 +116,33 @@ export function createGame(renderer) {
     renderer.updateParticles(dt); renderer.updateWeather(dt);
 
     // UI
-    ctx.fillStyle = 'rgba(0,0,0,0.65)'; ctx.font = `${Math.round(22 * s)}px system-ui, Arial`; ctx.textAlign = 'left'; ctx.fillText(`Score: ${score}`, 12 * s, 26 * s); ctx.textAlign = 'right'; ctx.fillText(`Best: ${best}`, W - 12 * s, 26 * s);
+    const fontSize = Math.max(16 * s, 14);
+    const smallFont = Math.max(12 * s, 11);
+    const titleFont = Math.max(24 * s, 20);
+    
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    ctx.font = `${Math.round(fontSize)}px system-ui, Arial`;
+    ctx.textAlign = 'left';
+    ctx.fillText(`Score: ${score}`, 12 * s, 26 * s);
+    ctx.textAlign = 'right';
+    ctx.fillText(`Best: ${best}`, W - 12 * s, 26 * s);
+    
     ctx.textAlign = 'center';
-    if (state === State.Ready) { ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.font = `bold ${Math.round(32 * s)}px system-ui, Arial`; ctx.fillText('Toque / Espaço para começar', W/2, H*0.35); ctx.font = `${Math.round(16 * s)}px system-ui, Arial`; ctx.fillText('Passe pelos canos para pontuar', W/2, H*0.35 + 26 * s); ctx.fillText('Teclas: R reinicia • F tela cheia', W/2, H*0.35 + 46 * s); }
-    if (state === State.GameOver) { ctx.fillStyle = 'rgba(0,0,0,0.55)'; ctx.font = `bold ${Math.round(38 * s)}px system-ui, Arial`; ctx.fillText('Game Over', W/2, H*0.35); ctx.font = `${Math.round(18 * s)}px system-ui, Arial`; ctx.fillText('Clique/tecla para reiniciar', W/2, H*0.35 + 28 * s); }
+    if (state === State.Ready) {
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.font = `bold ${Math.round(titleFont)}px system-ui, Arial`;
+      ctx.fillText('Toque / Espaço para começar', W/2, H*0.35);
+      ctx.font = `${Math.round(smallFont)}px system-ui, Arial`;
+      ctx.fillText('Passe pelos canos para pontuar', W/2, H*0.35 + 26 * s);
+      ctx.fillText('Teclas: R reinicia • F tela cheia', W/2, H*0.35 + 46 * s);
+    }
+    if (state === State.GameOver) {
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.font = `bold ${Math.round(titleFont + 4)}px system-ui, Arial`;
+      ctx.fillText('Game Over', W/2, H*0.35);
+      ctx.font = `${Math.round(smallFont + 2)}px system-ui, Arial`;
+      ctx.fillText('Clique/tecla para reiniciar', W/2, H*0.35 + 28 * s);
+    }
   }
 
   return { bird, pipe, pipes: () => pipes, state: () => state, recalc, hardReset, flap, update };

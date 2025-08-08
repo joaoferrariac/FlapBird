@@ -1,3 +1,19 @@
 :root{color-scheme:light dark}
-html,body{width:100%;height:100%;margin:0;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0e0e10;color:#fff}
-canvas{display:block;width:100vw;height:100vh;touch-action:manipulation;cursor:crosshair;background:linear-gradient(180deg,#78c9ff 0%,#bfe8ff 60%,#e9faff 100%)}
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0e0e10;color:#fff;position:fixed;top:0;left:0}
+canvas{display:block;width:100vw;height:100vh;touch-action:manipulation;cursor:crosshair;background:linear-gradient(180deg,#78c9ff 0%,#bfe8ff 60%,#e9faff 100%);image-rendering:auto;image-rendering:crisp-edges;image-rendering:-webkit-optimize-contrast}
+
+/* Mobile and tablet optimizations */
+@media (max-width: 768px) {
+  html,body{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  canvas{cursor:none}
+}
+
+/* Portrait orientation adjustments */
+@media (orientation: portrait) and (max-height: 600px) {
+  html,body{font-size:14px}
+}
+
+/* Landscape mobile adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  html,body{font-size:12px}
+}

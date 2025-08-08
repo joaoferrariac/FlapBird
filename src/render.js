@@ -14,19 +14,57 @@ export function createRenderer(canvas) {
   let shake = 0;
 
   function recalcScaled() {
+    // Base scaling factor from height
     s = H / base.H;
-    groundH = Math.max(70 * s, 56 * s);
+    
+    // Adjust scaling for extreme aspect ratios
+    const aspectRatio = W / H;
+    
+    // For very wide screens (landscape), limit scaling to prevent elements becoming too large
+    if (aspectRatio > 1.8) {
+      s = Math.min(s, W / (base.W * 1.5));
+    }
+    
+    // For very tall screens (portrait), ensure minimum scaling
+    if (aspectRatio < 0.6) {
+      s = Math.max(s, Math.min(W / base.W, H / (base.H * 1.2)));
+    }
+    
+    // Ensure reasonable bounds
+    s = Math.max(0.5, Math.min(3.0, s));
+    
+    groundH = Math.max(60 * s, 48 * s);
   }
 
   function resize(resetCb) {
-    dpr = Math.min(2, window.devicePixelRatio || 1);
-    W = Math.max(320, window.innerWidth);
-    H = Math.max(480, window.innerHeight);
+    dpr = Math.min(2.5, window.devicePixelRatio || 1);
+    
+    // Get actual viewport dimensions
+    const vw = Math.max(320, window.innerWidth);
+    const vh = Math.max(480, window.innerHeight);
+    
+    // For mobile devices, account for browser UI
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+      // Use visual viewport if available (modern browsers)
+      if (window.visualViewport) {
+        W = Math.max(320, window.visualViewport.width);
+        H = Math.max(480, window.visualViewport.height);
+      } else {
+        W = vw;
+        H = Math.max(480, vh * 0.95); // Account for mobile browser UI
+      }
+    } else {
+      W = vw;
+      H = vh;
+    }
+    
     canvas.width = Math.floor(W * dpr);
     canvas.height = Math.floor(H * dpr);
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    
     recalcScaled();
     resetCb?.();
   }

@@ -12,6 +12,28 @@ renderer.resize(() => {
   game.hardReset();
 });
 
+// Handle orientation changes and viewport resizes
+window.addEventListener('resize', () => {
+  setTimeout(() => {
+    renderer.resize(() => {
+      game.recalc();
+      game.hardReset();
+    });
+  }, 100);
+});
+
+// Handle visual viewport changes on mobile
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    setTimeout(() => {
+      renderer.resize(() => {
+        game.recalc();
+        game.hardReset();
+      });
+    }, 100);
+  });
+}
+
 // Input bindings
 bindInput({
   canvas,
