@@ -146,30 +146,65 @@ export function createGame(renderer) {
     ctx.fillText(`Best: ${best}`, W - 12 * s, 26 * s);
     
     ctx.textAlign = 'center';
+    // Card animado para menus
+    let cardY = H * 0.25;
+    let cardH = state === State.GameOver ? 220 * s + ranking.length * 18 * s : 160 * s;
+    let cardW = Math.min(340 * s, W * 0.9);
+    let cardX = (W - cardW) / 2;
+    // Animação de entrada (fade e leve bounce)
+    let tMenu = Math.min(1, Math.abs(Math.sin(ts / 400)) * 0.7 + 0.3);
+    ctx.save();
+    ctx.globalAlpha = 0.92 * tMenu;
+    // Sombra
+    ctx.shadowColor = 'rgba(0,0,0,0.18)';
+    ctx.shadowBlur = 18 * s;
+    // Card com gradiente
+    let grad = ctx.createLinearGradient(cardX, cardY, cardX, cardY + cardH);
+    grad.addColorStop(0, '#e3f6ff');
+    grad.addColorStop(1, '#b3e6ff');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(cardX + 18 * s, cardY);
+    ctx.lineTo(cardX + cardW - 18 * s, cardY);
+    ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + 18 * s);
+    ctx.lineTo(cardX + cardW, cardY + cardH - 18 * s);
+    ctx.quadraticCurveTo(cardX + cardW, cardY + cardH, cardX + cardW - 18 * s, cardY + cardH);
+    ctx.lineTo(cardX + 18 * s, cardY + cardH);
+    ctx.quadraticCurveTo(cardX, cardY + cardH, cardX, cardY + cardH - 18 * s);
+    ctx.lineTo(cardX, cardY + 18 * s);
+    ctx.quadraticCurveTo(cardX, cardY, cardX + 18 * s, cardY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    // Conteúdo do card
+    ctx.save();
+    ctx.textAlign = 'center';
     if (state === State.Ready) {
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillStyle = '#1a3a4a';
       ctx.font = `bold ${Math.round(titleFont)}px system-ui, Arial`;
-      ctx.fillText('Toque / Espaço para começar', W/2, H*0.35);
+      ctx.fillText('Voa Passarinho', W/2, cardY + 38 * s);
       ctx.font = `${Math.round(smallFont)}px system-ui, Arial`;
-      ctx.fillText('Passe pelos canos para pontuar', W/2, H*0.35 + 26 * s);
-      ctx.fillText('Teclas: R reinicia • F tela cheia', W/2, H*0.35 + 46 * s);
+      ctx.fillStyle = '#2d5c7f';
+      ctx.fillText('Toque / Espaço para começar', W/2, cardY + 70 * s);
+      ctx.fillText('Passe pelos canos para pontuar', W/2, cardY + 98 * s);
+      ctx.fillText('Teclas: R reinicia • F tela cheia', W/2, cardY + 126 * s);
     }
     if (state === State.GameOver) {
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fillStyle = '#b8002f';
       ctx.font = `bold ${Math.round(titleFont + 4)}px system-ui, Arial`;
-      ctx.fillText('Game Over', W/2, H*0.35);
+      ctx.fillText('Game Over', W/2, cardY + 38 * s);
       ctx.font = `${Math.round(smallFont + 2)}px system-ui, Arial`;
-      ctx.fillText('Clique/tecla para reiniciar', W/2, H*0.35 + 28 * s);
-
-      // Ranking dos melhores scores
+      ctx.fillStyle = '#2d5c7f';
+      ctx.fillText('Clique/tecla para reiniciar', W/2, cardY + 70 * s);
       ctx.font = `bold ${Math.round(smallFont + 2)}px system-ui, Arial`;
-      ctx.fillStyle = 'rgba(0,0,0,0.45)';
-      ctx.fillText('Ranking dos melhores:', W/2, H*0.35 + 54 * s);
+      ctx.fillStyle = '#1a3a4a';
+      ctx.fillText('Ranking dos melhores:', W/2, cardY + 100 * s);
       ctx.font = `${Math.round(smallFont + 1)}px system-ui, Arial`;
       ranking.forEach((val, idx) => {
-        ctx.fillText(`${idx + 1}º - ${val} pontos`, W/2, H*0.35 + (70 + idx * 18) * s);
+        ctx.fillText(`${idx + 1}º - ${val} pontos`, W/2, cardY + (120 + idx * 18) * s);
       });
     }
+    ctx.restore();
   }
 
   return { bird, pipe, pipes: () => pipes, state: () => state, recalc, hardReset, flap, update };
