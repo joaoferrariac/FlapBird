@@ -11,6 +11,7 @@ export function createGame(renderer) {
   let lastSpawn = 0;
   // Score
   let score = 0, best = Number(localStorage.getItem('flap_best') || 0);
+  let ranking = JSON.parse(localStorage.getItem('flap_ranking') || '[]');
   // Shake
   let shake = 0;
   // Physics
@@ -65,7 +66,7 @@ export function createGame(renderer) {
   let state = State.Ready;
 
   function hardReset() {
-    pipes = []; renderer.particles.length = 0; score = 0; lastSpawn = 0; renderer.shake = 0; bird.vy = 0; bird.rot = 0; bird.y = H * 0.45; renderer.initClouds(pipe.speed); renderer.initMountains(); renderer.setRandomWeather(); state = State.Ready;
+  pipes = []; renderer.particles.length = 0; score = 0; lastSpawn = 0; renderer.shake = 0; bird.vy = 0; bird.rot = 0; bird.y = H * 0.45; renderer.initClouds(pipe.speed); renderer.initMountains(); renderer.setRandomWeather(); state = State.Ready;
   }
 
   function flap() {
@@ -79,7 +80,7 @@ export function createGame(renderer) {
     ctx.clearRect(0, 0, W, H);
 
     // Aumenta a velocidade dos canos conforme o tempo de jogo
-    if (state === State.Playing) {
+  if (state === State.Playing) {
       // A cada segundo, aumenta um pouco a velocidade (máx. 2x inicial)
       const tempoSegundos = ts / 1000;
       pipe.speed = pipeBase.speed * Math.min(2, 1 + tempoSegundos * 0.015);
@@ -116,7 +117,17 @@ export function createGame(renderer) {
       if (bird.y - bird.r <= 0 || bird.y + bird.r >= usableH) { state = State.GameOver; renderer.shake = 6 * s; }
     } else {
       if (state === State.Ready) { bird.y += Math.sin(ts / 250) * 0.6 * s; const rTargetIdle = Math.sin(ts / 400) * 0.15; bird.rot += (rTargetIdle - bird.rot) * 0.1 * t; bird.wingPhase += 0.15 * t; }
-      if (state === State.GameOver) { const gy = H - groundH; if (bird.y + bird.r < gy) { bird.vy += bird.gravity * t; bird.y += bird.vy * t; bird.rot = Math.min(1.2, bird.rot + 0.035 * t); } else { bird.y = gy - bird.r; } bird.wingPhase += 0.05 * t; }
+      if (state === State.GameOver) {
+        // Atualiza ranking se ainda não foi salvo para este score
+        if (score > 0 && (ranking.length === 0 || ranking[0] !== score)) {
+          ranking.push(score);
+          ranking = Array.from(new Set(ranking)).sort((a, b) => b - a).slice(0, 5);
+          localStorage.setItem('flap_ranking', JSON.stringify(ranking));
+        }
+        const gy = H - groundH;
+        if (bird.y + bird.r < gy) { bird.vy += bird.gravity * t; bird.y += bird.vy * t; bird.rot = Math.min(1.2, bird.rot + 0.035 * t); } else { bird.y = gy - bird.r; }
+        bird.wingPhase += 0.05 * t;
+      }
     }
 
     renderer.drawPipes(pipes, pipe, H, groundH, s); renderer.drawParticles(); renderer.drawBirdTrail(bird, s); renderer.drawBird(bird, s, H, groundH); renderer.drawGround(pipe.speed); renderer.drawPipeGroundShadows(pipes, pipe, H, groundH, s); renderer.drawWeather(); renderer.drawVignette(); ctx.restore();
@@ -149,6 +160,15 @@ export function createGame(renderer) {
       ctx.fillText('Game Over', W/2, H*0.35);
       ctx.font = `${Math.round(smallFont + 2)}px system-ui, Arial`;
       ctx.fillText('Clique/tecla para reiniciar', W/2, H*0.35 + 28 * s);
+
+      // Ranking dos melhores scores
+      ctx.font = `bold ${Math.round(smallFont + 2)}px system-ui, Arial`;
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      ctx.fillText('Ranking dos melhores:', W/2, H*0.35 + 54 * s);
+      ctx.font = `${Math.round(smallFont + 1)}px system-ui, Arial`;
+      ranking.forEach((val, idx) => {
+        ctx.fillText(`${idx + 1}º - ${val} pontos`, W/2, H*0.35 + (70 + idx * 18) * s);
+      });
     }
   }
 
